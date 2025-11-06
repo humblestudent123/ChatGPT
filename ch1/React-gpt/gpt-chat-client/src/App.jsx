@@ -6,7 +6,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const chatRef = useRef(null);
 
-  // Автоскролл вниз при каждом сообщении
+  // автоскролл
   useEffect(() => {
     chatRef.current?.scrollTo({
       top: chatRef.current.scrollHeight,
@@ -14,13 +14,13 @@ export default function App() {
     });
   }, [messages, loading]);
 
-  // Загрузка истории
+  // загрузка истории
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("chat-history")) || [];
     setMessages(saved);
   }, []);
 
-  // Сохранение истории
+  // сохранение истории
   useEffect(() => {
     localStorage.setItem("chat-history", JSON.stringify(messages));
   }, [messages]);
@@ -43,11 +43,9 @@ export default function App() {
       const data = await res.json();
       const fullText = data.reply;
 
-      // Добавляем пустое сообщение бота
       const botMessage = { role: "assistant", content: "" };
       setMessages((prev) => [...prev, botMessage]);
 
-      // Эффект печати
       let i = 0;
       const interval = setInterval(() => {
         i++;
@@ -78,16 +76,16 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100 font-sans animate-fadeIn">
       {/* Верхняя панель */}
-      <header className="w-full border-b border-gray-800 bg-gray-900/70 backdrop-blur-md">
+      <header className="w-full border-b border-gray-800 bg-gray-900/80 backdrop-blur-md shadow-md">
         <div className="max-w-3xl mx-auto flex justify-between items-center py-4 px-4">
-          <h1 className="text-xl font-semibold text-emerald-400 select-none">
+          <h1 className="text-xl font-bold text-emerald-400 select-none drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]">
             💬 GPT Chat
           </h1>
           <button
             onClick={clearChat}
-            className="px-3 py-1.5 text-sm bg-red-500 hover:bg-red-600 transition rounded-lg"
+            className="px-3 py-1.5 text-sm bg-red-500/90 hover:bg-red-600 transition rounded-lg shadow-sm hover:shadow-red-500/40"
           >
             Очистить
           </button>
@@ -97,22 +95,22 @@ export default function App() {
       {/* Область чата */}
       <main
         ref={chatRef}
-        className="flex-1 w-full flex justify-center overflow-y-auto"
+        className="flex-1 w-full flex justify-center overflow-y-auto py-6"
       >
-        <div className="w-full max-w-3xl px-4 py-6 space-y-4">
+        <div className="w-full max-w-3xl px-4 space-y-4">
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex transition-opacity duration-300 ${
+              className={`flex transition-all duration-300 ease-out ${
                 msg.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
               <div
-                className={`px-4 py-3 rounded-2xl text-sm md:text-base shadow-sm ${
+                className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] ${
                   msg.role === "user"
-                    ? "bg-emerald-600 text-white"
-                    : "bg-gray-800 text-gray-200 font-mono"
-                }`}
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/30"
+                    : "bg-gray-800/90 text-gray-200 font-mono shadow-gray-700/30"
+                } animate-slideIn`}
               >
                 {msg.content}
                 {loading && msg.role === "assistant" && (
@@ -122,19 +120,28 @@ export default function App() {
             </div>
           ))}
 
+          {loading && !messages[messages.length - 1]?.content && (
+            <div className="flex items-center gap-2 text-gray-400 italic text-sm mt-2 animate-pulse">
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
+              <span>GPT думает...</span>
+            </div>
+          )}
+
           {messages.length === 0 && (
-            <div className="text-center text-gray-500 italic mt-16">
-              Начни диалог 👋
+            <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
+              Начни новый диалог 👋
             </div>
           )}
         </div>
       </main>
 
       {/* Поле ввода */}
-      <footer className="border-t border-gray-800 bg-gray-900/70 backdrop-blur-md px-4 py-4">
+      <footer className="border-t border-gray-800 bg-gray-900/80 backdrop-blur-md px-4 py-4">
         <div className="max-w-3xl mx-auto flex gap-2">
           <input
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 bg-gray-800/90 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
             placeholder="Введите сообщение..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -142,7 +149,7 @@ export default function App() {
           />
           <button
             onClick={sendMessage}
-            className="px-5 bg-emerald-600 hover:bg-emerald-500 transition rounded-xl font-semibold text-white"
+            className="relative px-5 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-[length:200%_auto] hover:bg-right transition-all duration-500 shadow-lg hover:shadow-emerald-500/25"
           >
             Отправить
           </button>

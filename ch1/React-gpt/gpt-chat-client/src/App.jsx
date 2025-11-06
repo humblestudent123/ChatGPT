@@ -106,16 +106,19 @@ export default function App() {
               }`}
             >
               <div
-                className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] ${
+                className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 ${
                   msg.role === "user"
-                    ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/30"
-                    : "bg-gray-800/90 text-gray-200 font-mono shadow-gray-700/30"
-                } animate-slideIn`}
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                    : "bg-gray-800/90 text-gray-200 font-mono shadow-gray-700/20 hover:shadow-gray-600/30"
+                } animate-fadeIn`}
               >
                 {msg.content}
-                {loading && msg.role === "assistant" && (
-                  <span className="ml-1 text-gray-400 animate-blink">|</span>
-                )}
+                {/* Курсор только у последнего сообщения ассистента */}
+                {loading &&
+                  msg.role === "assistant" &&
+                  i === messages.length - 1 && (
+                    <span className="ml-1 text-emerald-400 animate-blink">|</span>
+                  )}
               </div>
             </div>
           ))}

@@ -5,24 +5,24 @@ import remarkGfm from "remark-gfm";
 export default function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingId, setLoadingId] = useState(null); // ID печатающегося сообщения
   const chatRef = useRef(null);
 
-  // автоскролл
+  // Автоскролл
   useEffect(() => {
     chatRef.current?.scrollTo({
       top: chatRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, loading]);
+  }, [messages]);
 
-  // загрузка истории
+  // Загрузка истории
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("chat-history")) || [];
     setMessages(saved);
   }, []);
 
-  // сохранение истории
+  // Сохранение истории
   useEffect(() => {
     localStorage.setItem("chat-history", JSON.stringify(messages));
   }, [messages]);
@@ -30,10 +30,14 @@ export default function App() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
+    const userMessage = { id: Date.now() + Math.random(), role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setLoading(true);
+
+    const botMessageId = Date.now() + Math.random();
+    const botMessage = { id: botMessageId, role: "assistant", content: "" };
+    setMessages((prev) => [...prev, botMessage]);
+    setLoadingId(botMessageId);
 
     try {
       const res = await fetch("http://localhost:3000/chat", {
@@ -41,34 +45,32 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
       });
-
       const data = await res.json();
       const fullText = data.reply;
 
-      const botMessage = { role: "assistant", content: "" };
-      setMessages((prev) => [...prev, botMessage]);
-
+      // Плавная печать
       let i = 0;
       const interval = setInterval(() => {
         i++;
         setMessages((prev) =>
-          prev.map((m, idx) =>
-            idx === prev.length - 1
-              ? { ...m, content: fullText.slice(0, i) }
-              : m
+          prev.map((m) =>
+            m.id === botMessageId ? { ...m, content: fullText.slice(0, i) } : m
           )
         );
         if (i === fullText.length) {
           clearInterval(interval);
-          setLoading(false);
+          setLoadingId(null);
         }
       }, 25);
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ Ошибка соединения с сервером." },
-      ]);
-      setLoading(false);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === botMessageId
+            ? { ...m, content: "⚠️ Ошибка соединения с сервером." }
+            : m
+        )
+      );
+      setLoadingId(null);
     }
   };
 
@@ -95,83 +97,42 @@ export default function App() {
       </header>
 
       {/* Область чата */}
-<main
-  ref={chatRef}
-  className="flex-1 w-full flex justify-center overflow-y-auto py-6"
->
-  <div className="w-full max-w-3xl px-4 space-y-4">
-    {messages.map((msg, i) => (
-      <div
-        key={i}
-        className={`flex transition-all duration-300 ease-out ${
-          msg.role === "user" ? "justify-end" : "justify-start"
-        }`}
+      <main
+        ref={chatRef}
+        className="flex-1 w-full flex justify-center overflow-y-auto py-6"
       >
-        <div
-          className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 ${
-            msg.role === "user"
-              ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/20"
-              : "bg-gray-800/90 text-gray-100 font-mono shadow-gray-700/20"
-          } animate-fadeIn`}
-        >
-          {/* Контейнер flex для выравнивания текста и курсора */}
-          <div className="flex items-baseline flex-wrap prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed">
-            {/* Markdown с интегрированным курсором */}
-<div className="prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed font-mono">
-  {loading && msg.role === "assistant" && i === messages.length - 1 ? (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        p: ({ children }) => (
-          <p className="inline">
-            {children}
-            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
-          </p>
-        ),
-        li: ({ children }) => (
-          <li className="inline">
-            {children}
-            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
-          </li>
-        ),
-        code: ({ children }) => (
-          <code className="inline-block bg-gray-900/50 px-1 rounded">
-            {children}
-            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
-          </code>
-        ),
-      }}
-    >
-      {msg.content}
-    </ReactMarkdown>
-  ) : (
-    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-      {msg.content}
-    </ReactMarkdown>
-  )}
-</div>
+        <div className="w-full max-w-3xl px-4 space-y-4">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex transition-all duration-300 ease-out ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div
+                className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 ${
+                  msg.role === "user"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/20"
+                    : "bg-gray-800/90 text-gray-100 font-mono shadow-gray-700/20"
+                } animate-fadeIn`}
+              >
+                <div className="prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed font-mono">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.content +
+                      (msg.role === "assistant" && loadingId === msg.id ? "|" : "")}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </div>
+          ))}
 
-          </div>
+          {messages.length === 0 && (
+            <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
+              Начни новый диалог 👋
+            </div>
+          )}
         </div>
-      </div>
-    ))}
-
-    {loading && !messages[messages.length - 1]?.content && (
-      <div className="flex items-center gap-2 text-gray-400 italic text-sm mt-2 animate-pulse">
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
-        <span>GPT думает...</span>
-      </div>
-    )}
-
-    {messages.length === 0 && (
-      <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
-        Начни новый диалог 👋
-      </div>
-    )}
-  </div>
-</main>
+      </main>
 
       {/* Поле ввода */}
       <footer className="border-t border-gray-800 bg-gray-900/80 backdrop-blur-md px-4 py-4">

@@ -95,7 +95,6 @@ export default function App() {
       </header>
 
       {/* Область чата */}
-      {/* Область чата */}
 <main
   ref={chatRef}
   className="flex-1 w-full flex justify-center overflow-y-auto py-6"
@@ -117,18 +116,41 @@ export default function App() {
         >
           {/* Контейнер flex для выравнивания текста и курсора */}
           <div className="flex items-baseline flex-wrap prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {msg.content}
-            </ReactMarkdown>
+            {/* Markdown с интегрированным курсором */}
+<div className="prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed font-mono">
+  {loading && msg.role === "assistant" && i === messages.length - 1 ? (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        p: ({ children }) => (
+          <p className="inline">
+            {children}
+            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
+          </p>
+        ),
+        li: ({ children }) => (
+          <li className="inline">
+            {children}
+            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
+          </li>
+        ),
+        code: ({ children }) => (
+          <code className="inline-block bg-gray-900/50 px-1 rounded">
+            {children}
+            <span className="text-emerald-400 animate-blinkGlow select-none">|</span>
+          </code>
+        ),
+      }}
+    >
+      {msg.content}
+    </ReactMarkdown>
+  ) : (
+    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      {msg.content}
+    </ReactMarkdown>
+  )}
+</div>
 
-            {/* Мигающий курсор у последнего сообщения ассистента */}
-            {loading &&
-              msg.role === "assistant" &&
-              i === messages.length - 1 && (
-                <span className="ml-1 text-emerald-400 animate-blinkGlow select-none">
-                  |
-                </span>
-              )}
           </div>
         </div>
       </div>

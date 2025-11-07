@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function App() {
   const [messages, setMessages] = useState([]);
@@ -93,52 +95,61 @@ export default function App() {
       </header>
 
       {/* Область чата */}
-      <main
-        ref={chatRef}
-        className="flex-1 w-full flex justify-center overflow-y-auto py-6"
+      {/* Область чата */}
+<main
+  ref={chatRef}
+  className="flex-1 w-full flex justify-center overflow-y-auto py-6"
+>
+  <div className="w-full max-w-3xl px-4 space-y-4">
+    {messages.map((msg, i) => (
+      <div
+        key={i}
+        className={`flex transition-all duration-300 ease-out ${
+          msg.role === "user" ? "justify-end" : "justify-start"
+        }`}
       >
-        <div className="w-full max-w-3xl px-4 space-y-4">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex transition-all duration-300 ease-out ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 ${
-                  msg.role === "user"
-                    ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/20 hover:shadow-emerald-500/40"
-                    : "bg-gray-800/90 text-gray-200 font-mono shadow-gray-700/20 hover:shadow-gray-600/30"
-                } animate-fadeIn`}
-              >
-                {msg.content}
-                {/* Курсор только у последнего сообщения ассистента */}
-                {loading &&
-                  msg.role === "assistant" &&
-                  i === messages.length - 1 && (
-                    <span className="ml-1 text-emerald-400 animate-blink">|</span>
-                  )}
-              </div>
-            </div>
-          ))}
+        <div
+          className={`relative px-4 py-3 rounded-2xl text-sm md:text-base shadow-lg backdrop-blur-sm transition-all duration-300 ${
+            msg.role === "user"
+              ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-emerald-500/20"
+              : "bg-gray-800/90 text-gray-100 font-mono shadow-gray-700/20"
+          } animate-fadeIn`}
+        >
+          {/* Контейнер flex для выравнивания текста и курсора */}
+          <div className="flex items-baseline flex-wrap prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {msg.content}
+            </ReactMarkdown>
 
-          {loading && !messages[messages.length - 1]?.content && (
-            <div className="flex items-center gap-2 text-gray-400 italic text-sm mt-2 animate-pulse">
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
-              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
-              <span>GPT думает...</span>
-            </div>
-          )}
-
-          {messages.length === 0 && (
-            <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
-              Начни новый диалог 👋
-            </div>
-          )}
+            {/* Мигающий курсор у последнего сообщения ассистента */}
+            {loading &&
+              msg.role === "assistant" &&
+              i === messages.length - 1 && (
+                <span className="ml-1 text-emerald-400 animate-blinkGlow select-none">
+                  |
+                </span>
+              )}
+          </div>
         </div>
-      </main>
+      </div>
+    ))}
+
+    {loading && !messages[messages.length - 1]?.content && (
+      <div className="flex items-center gap-2 text-gray-400 italic text-sm mt-2 animate-pulse">
+        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
+        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
+        <span>GPT думает...</span>
+      </div>
+    )}
+
+    {messages.length === 0 && (
+      <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
+        Начни новый диалог 👋
+      </div>
+    )}
+  </div>
+</main>
 
       {/* Поле ввода */}
       <footer className="border-t border-gray-800 bg-gray-900/80 backdrop-blur-md px-4 py-4">

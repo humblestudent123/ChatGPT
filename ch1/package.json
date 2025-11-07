@@ -13,7 +13,9 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "openai": "^6.8.1"
+    "openai": "^6.8.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

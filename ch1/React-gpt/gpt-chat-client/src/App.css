@@ -56,3 +56,69 @@
 .animate-blink {
   animation: blink 1s step-start infinite;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Плавное мигание курсора */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s ease-in-out infinite;
+}
+
+/* Markdown-оформление */
+.prose {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.prose strong {
+  color: #6ee7b7;
+  font-weight: 600;
+}
+
+.prose code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.prose pre {
+  background: rgba(17, 24, 39, 0.7);
+  padding: 1rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(75, 85, 99, 0.4);
+}
+
+.prose a {
+  color: #10b981;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: #34d399;
+}

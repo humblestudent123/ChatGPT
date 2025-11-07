@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import CodeBlock from "./components/CodeBlock";
 
 export default function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loadingId, setLoadingId] = useState(null); // ID печатающегося сообщения
+  const [loadingId, setLoadingId] = useState(null);
   const chatRef = useRef(null);
 
   // Автоскролл
@@ -45,10 +46,10 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
       });
+
       const data = await res.json();
       const fullText = data.reply;
 
-      // Плавная печать
       let i = 0;
       const interval = setInterval(() => {
         i++;
@@ -81,7 +82,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100 font-sans animate-fadeIn">
-      {/* Верхняя панель */}
       <header className="w-full border-b border-gray-800 bg-gray-900/80 backdrop-blur-md shadow-md">
         <div className="max-w-3xl mx-auto flex justify-between items-center py-4 px-4">
           <h1 className="text-xl font-bold text-emerald-400 select-none drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]">
@@ -96,7 +96,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Область чата */}
       <main
         ref={chatRef}
         className="flex-1 w-full flex justify-center overflow-y-auto py-6"
@@ -116,15 +115,39 @@ export default function App() {
                     : "bg-gray-800/90 text-gray-100 font-mono shadow-gray-700/20"
                 } animate-fadeIn`}
               >
-                <div className="prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed font-mono">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {msg.content +
-                      (msg.role === "assistant" && loadingId === msg.id ? "|" : "")}
+                <div className="prose prose-invert max-w-none whitespace-pre-wrap break-words leading-relaxed font-mono relative">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      code({ node, inline, className, children }) {
+                        if (inline) {
+                          return <code className="bg-gray-700/50 rounded px-1">{children}</code>;
+                        }
+                        return <CodeBlock className={className}>{children}</CodeBlock>;
+                      },
+                    }}
+                  >
+                    {msg.content}
                   </ReactMarkdown>
+
+                  {msg.role === "assistant" && loadingId === msg.id && (
+                    <span className="absolute bottom-0 translate-y-[-0.1em] text-emerald-400 animate-blinkGlow select-none ml-1">
+                      |
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
           ))}
+
+          {loadingId && (
+            <div className="flex items-center gap-2 text-gray-400 italic text-sm animate-pulse mt-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
+              <span>GPT думает...</span>
+            </div>
+          )}
 
           {messages.length === 0 && (
             <div className="text-center text-gray-500 italic mt-20 animate-fadeInSlow">
@@ -134,7 +157,6 @@ export default function App() {
         </div>
       </main>
 
-      {/* Поле ввода */}
       <footer className="border-t border-gray-800 bg-gray-900/80 backdrop-blur-md px-4 py-4">
         <div className="max-w-3xl mx-auto flex gap-2">
           <input

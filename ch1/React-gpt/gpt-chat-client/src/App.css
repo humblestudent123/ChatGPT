@@ -51,6 +51,10 @@
   25%, 75% { opacity: 0; }
 }
 
+.animate-blinkGlow {
+  animation: blinkGlow 1s step-start infinite;
+}
+
 .cursor {
   display: inline-block;
   animation: blinkGlow 1s step-start infinite;
@@ -63,6 +67,7 @@
   font-family: 'Fira Code', monospace;
   font-size: 0.95rem;
   line-height: 1.6;
+  color: #f9fafb;
 }
 
 .prose strong {
@@ -87,6 +92,16 @@
   border: 1px solid rgba(75, 85, 99, 0.4);
 }
 
+/* ===== Изображения ===== */
+.prose img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* ===== Ссылки ===== */
 .prose a {
   color: #10b981;
   text-decoration: underline;
@@ -95,4 +110,26 @@
 
 .prose a:hover {
   color: #34d399;
+}
+
+/* ===== Scrollbar для чата ===== */
+main::-webkit-scrollbar {
+  width: 6px;
+}
+main::-webkit-scrollbar-thumb {
+  background: rgba(16,185,129,0.5);
+  border-radius: 3px;
+}
+main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== Плавные переходы для сообщений ===== */
+.transition-all {
+  transition: all 0.3s ease-out;
+}
+
+/* ===== Кастомные тени для сообщений ===== */
+.shadow-lg {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
 }

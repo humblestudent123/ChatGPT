@@ -225,7 +225,7 @@ const sendMessage = async () => {
 "
 
           >
-            Отправить
+            ➤
           </button>
         </div>
       </footer>

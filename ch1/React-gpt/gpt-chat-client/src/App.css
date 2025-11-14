@@ -9,10 +9,13 @@
   margin: 0 auto;
   padding: 1rem;
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
+
   background: #212121;
   color: #e5e5e5;
+
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -24,6 +27,7 @@ header {
   padding: 1rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   background: #212121;
+
   display: flex;
   justify-content: center;
 }
@@ -39,6 +43,7 @@ main {
   flex: 1;
   overflow-y: auto;
   padding: 2rem 0;
+
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -59,34 +64,36 @@ main::-webkit-scrollbar-thumb {
   padding: 14px 18px;
   border-radius: 16px;
   word-break: break-word;
+
   line-height: 1.55;
   font-size: 1rem;
   transition: all 0.25s ease-out;
 }
 
-/* Пользователь — как в ChatGPT */
+/* Пользователь — как ChatGPT */
 .user-message {
   background: #3a3a3c;
   color: #fff;
   align-self: flex-end;
 }
 
-/* Бот — как оригинальный ChatGPT */
+/* Бот — очень близко к оригиналу */
 .bot-message {
   background: #2f2f2f;
   color: #e5e5e5;
+
   border: 1px solid rgba(255,255,255,0.07);
   align-self: flex-start;
 }
 
-/* Печатает… */
+/* Бот "печатает" */
 .bot-message .writing {
   opacity: 0.8;
   font-style: italic;
   margin-left: 4px;
 }
 
-/* Мигающий курсор */
+/* Курсор */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -121,104 +128,133 @@ main::-webkit-scrollbar-thumb {
   padding: 1rem;
   border-radius: 10px;
   overflow-x: auto;
+
   border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* ===== Footer (ввод) ===== */
+/* ===== FOOTER — полная копия ChatGPT ===== */
+
 footer {
-  padding: 1rem 0;
-  display: flex;
-  gap: 10px;
+  padding: 1.5rem 0;
   border-top: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  justify-content: center;
+
+  position: sticky;
+  bottom: 0;
+
+  background: #212121;
+  backdrop-filter: blur(16px);
 }
 
-/* ===== Новый интерфейс ChatGPT Input ===== */
-footer input {
-  flex: 1;
-  padding: 14px 18px;
-  font-size: 1rem;
-  border-radius: 12px;
+/* ===== Внешний контейнер input ===== */
+.chat-input-wrapper {
+  width: 100%;
+  max-width: 780px;
 
-  /* Основной стиль */
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
 
-  color: #e5e5e5;
+  border-radius: 22px;
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
   transition:
-      background 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease,
-      transform 0.15s ease;
+    border-color .25s ease,
+    box-shadow .25s ease,
+    transform .25s ease;
 }
 
-/* Hover — активация поверх стекла */
-footer input:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.22);
+/* Hover */
+.chat-input-wrapper:hover {
+  border-color: rgba(255,255,255,0.22);
 }
 
-/* Focus — как в ChatGPT Desktop */
-footer input:focus {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.35);
+/* Focus (через класс .focused) */
+.chat-input-wrapper.focused {
+  border-color: rgba(255,255,255,0.35);
 
   box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.14),
-    0 4px 24px rgba(0, 0, 0, 0.45);
+    0 0 0 4px rgba(255,255,255,0.12),
+    0 10px 28px rgba(0,0,0,0.45);
 
+  transform: translateY(-3px);
+}
+
+/* ===== Сам input ===== */
+footer input {
+  flex: 1;
+  background: transparent;
+  border: none;
   outline: none;
-  transform: translateY(-1px);
-}
 
-/* Placeholder */
-footer input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-  transition: color 0.25s ease;
-}
-footer input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-
-/* Placeholder */
-footer input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-  transition: color 0.25s;
-}
-
-footer input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-
-footer input:hover {
-  border-color: #4a4a4a;
-}
-
-footer input:focus {
-  background: #181818;
-  border-color: #8e8e8e;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
-}
-
-
-
-footer button {
-  padding: 14px 20px;
-  background: #3a3a3c;
-  border-radius: 10px;
+  padding: 6px;
+  font-size: 1rem;
   color: #fff;
-  font-weight: 500;
-  transition: background .2s;
+
+  font-family: "Inter", sans-serif;
 }
 
+/* Placeholder — мягкий ChatGPT стиль */
+footer input::placeholder {
+  color: rgba(255,255,255,0.40);
+  letter-spacing: 0.2px;
+}
 
-/* ===== Плавное появление ===== */
+footer input:focus::placeholder {
+  color: rgba(255,255,255,0.55);
+}
+
+/* ===== Кнопка отправки ===== */
+footer button {
+  padding: 10px 14px;
+
+  background: #3b3b3c;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255,255,255,0.12);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  transition:
+    background .25s ease,
+    transform .15s ease,
+    box-shadow .25s ease;
+}
+
+footer button:hover {
+  background: #505052;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+footer button:active {
+  transform: scale(0.92);
+}
+
+/* Иконка "send" */
+footer button::after {
+  content: "➤";
+  font-size: 1.1rem;
+  margin-left: 6px;
+  opacity: 0.8;
+}
+
+/* ===== Анимация появления сообщений ===== */
 .message-enter {
   opacity: 0;
   transform: translateY(10px);
 }
+
 .message-enter-active {
   opacity: 1;
   transform: translateY(0);
